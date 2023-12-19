@@ -16,6 +16,12 @@ int checkCollision(struct mySnake snake);
 void updateSnakeBody(struct mySnake* snake);
 void increaseSnakeLength(struct mySnake* snake);
 
+/*
+* A struct to declare the most important aspects
+* of the Snake that will necessary to play
+* this game
+*/
+
 struct mySnake
 {
 	int headX;
@@ -49,12 +55,12 @@ int main(void)
 			snake.direction = direction;
 		}
 
+		//Calling of Functions to Move, confirm and Update Snake status
 		moveSnake(&snake);
-
 		gameOver = checkCollision(snake);
-
 		updateSnakeBody(&snake);
 
+		//This function will give a delay to the system according the time given.
 		Sleep(100);
 
 		if (_kbhit())
@@ -69,6 +75,12 @@ int main(void)
 	
 	return 0;
 }
+
+/*
+* PrintBoard function will take three parameters and will create a Board
+* Where the player will play the Snake Game. Also it will create the
+* Snake's body
+*/
 
 void printBoard(struct mySnake snake, int fruitX, int fruitY)
 {
@@ -113,6 +125,17 @@ void printBoard(struct mySnake snake, int fruitX, int fruitY)
 	}
 }
 
+/*
+* This function will generate a fruit randomnly that will be eaten by
+* the snake
+*/
+
+//ALERT:
+/*
+* This function has a serious problem that generate the fruit but it
+* doesn't stop until the fruit appears in the same place of the Snake.
+*/
+
 void generateFruit(struct mySnake *snake, int* fruitX, int* fruitY)
 {
 	int collision = 0;
@@ -140,8 +163,13 @@ void generateFruit(struct mySnake *snake, int* fruitX, int* fruitY)
 		}
 
 	} while (collision);
-
 }
+
+/*
+* getInput is needed to get the movement of Snake using wasd standard control
+* It will also return a specific number that will be stored in a variable and
+* will modify the place of the Snake
+*/
 
 int getInput(void)
 {
@@ -170,6 +198,12 @@ int getInput(void)
 	return key;
 }
 
+/*
+* After receive the Input from the User. The Snake
+* will be moved, adding or removing a place according
+* to wich the user press
+*/
+
 void moveSnake(struct mySnake* snake)
 {
 	switch (snake->direction)
@@ -189,6 +223,11 @@ void moveSnake(struct mySnake* snake)
 	}
 }
 
+/*
+* It is necessary to use this function to check the colition with the Wall.
+* If the snake collides with the Wall, is Game Over
+*/
+
 int checkCollision(struct mySnake snake)
 {
 	if (snake.headX == 0 || snake.headX == width - 1 || snake.headY == 0 || snake.headY == height - 1)
@@ -207,6 +246,11 @@ int checkCollision(struct mySnake snake)
 	return 0;
 }
 
+/*
+* The updateSnakeBody is responsible to do that, update the Snake
+* and adding more body each time the snake eat the fruit
+*/
+
 void updateSnakeBody(struct mySnake* snake)
 {
 	for (int counter = snake->length - 1; counter > 0; counter--)
@@ -217,6 +261,10 @@ void updateSnakeBody(struct mySnake* snake)
 	snake->bodyX[0] = snake->headX;
 	snake->bodyY[0] = snake->headY;
 }
+
+/*
+* While more you eat, bigger you will be
+*/
 
 void increaseSnakeLength(struct mySnake* snake)
 {
