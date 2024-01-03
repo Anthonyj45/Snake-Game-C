@@ -27,6 +27,8 @@ struct snakeBody
 {
 	int tailX[body_length];
 	int tailY[body_length];
+	int positionBodyX[body_length];
+	int positionBodyY[body_length];
 };
 
 struct myFruit
@@ -40,13 +42,13 @@ struct myFruit
 void generate_fruit(struct mySnake* snake, struct myFruit* fruit, struct snakeBody* body);
 void print_board(struct mySnake snake, struct snakeBody body, struct myFruit fruit);
 int get_input(void);
-void move_snake(struct mySnake* snake);
-int check_collision(struct mySnake snake, struct snakeBody body);
+void move_snake(struct mySnake* snake, struct snakeBody* body);
+int check_collision(struct mySnake snake, struct snakeBody body, struct myFruit fruit);
 
 int main(void)
 {
 	struct mySnake snake = { width / 2, height / 2, 1, 0 };
-	struct snakeBody body = { {0}, {0} };
+	struct snakeBody body = { {-1}, {-1}, {-1}, {-1} };
 	struct myFruit fruit = { 0, 0, 0 };
 
 	int game_over = 0;
@@ -60,7 +62,7 @@ int main(void)
 		{
 			snake.direction = direction;
 		}
-		move_snake(&snake);
+		move_snake(&snake, &body);
 
 		if (snake.headX == fruit.positionX && snake.headY == fruit.positionY)
 		{
@@ -71,7 +73,7 @@ int main(void)
 
 		print_board(snake, body, fruit);
 
-		game_over = check_collision(snake, body);
+		game_over = check_collision(snake, body, fruit);
 
 		Sleep(100);
 	}
@@ -92,17 +94,26 @@ void print_board(struct mySnake snake, struct snakeBody body, struct myFruit fru
 			{
 				printf("O");
 				isBodyPart = 1;
-				int counterTailX = counter;
-				int counterTailY = sCounter;
+				
+			}
+			else
+			{
 				if (fruit.eaten == 1)
 				{
 					for (int tCounter = 0; tCounter < snake.length; tCounter++)
 					{
-						printf("o");
+						if (counter == body.positionBodyY[tCounter] && sCounter == body.positionBodyX[tCounter])
+						{
+							printf("o");
+							isBodyPart = 1;
+							break;
+						}
+						
 					}
-					isBodyPart = 1;
+					
 				}
 			}
+
 			if (!isBodyPart)
 			{
 				if (counter == 0 || counter == height - 1 || sCounter == 0 || sCounter == width - 1)
@@ -193,8 +204,16 @@ int get_input(void)
 * to wich the user press
 */
 
-void move_snake(struct mySnake* snake)
+void move_snake(struct mySnake* snake, struct snakeBody* body)
 {
+	for (int counter = snake->length - 1; counter > 0; counter--)
+	{
+		body->positionBodyX[counter] = body->positionBodyX[counter - 1];
+		body->positionBodyY[counter] = body->positionBodyY[counter - 1];
+	}
+	body->positionBodyX[0] = snake->headX;
+	body->positionBodyY[0] = snake->headY;
+
 	switch (snake->direction)
 	{
 	case 1:
@@ -212,7 +231,7 @@ void move_snake(struct mySnake* snake)
 	}
 }
 
-int check_collision(struct mySnake snake, struct snakeBody body)
+int check_collision(struct mySnake snake, struct snakeBody body, struct myFruit fruit)
 {
 	if (snake.headX == 0 || snake.headX == width - 1 || snake.headY == 0 || snake.headY == height - 1)
 	{
@@ -225,6 +244,7 @@ int check_collision(struct mySnake snake, struct snakeBody body)
 		{
 			return 1;
 		}
+		
 	}
 	return 0;
 }
